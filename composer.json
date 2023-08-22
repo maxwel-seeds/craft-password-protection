@@ -2,7 +2,7 @@
     "name": "imarc/craft-password-protection",
     "description": "Password protect any page on the CMS.",
     "type": "craft-plugin",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "keywords": [
         "craft",
         "cms",

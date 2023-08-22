@@ -31,6 +31,7 @@ use craft\base\Element;
 use craft\elements\Entry;
 use craft\events\RegisterElementActionsEvent;
 use craft\events\RegisterTemplateRootsEvent;
+use craft\events\DefineHtmlEvent;
 
 use yii\base\Event;
 
@@ -46,7 +47,7 @@ use yii\base\Event;
  *
  * @author    Imarc
  * @package   PasswordProtection
- * @since     1.0.0
+ * @since     2.0.1
  *
  * @property  PasswordProtectionServiceService $passwordProtectionService
  * @property  Settings $settings
@@ -73,7 +74,7 @@ class PasswordProtection extends Plugin
      *
      * @var string
      */
-    public string $schemaVersion = '2.0.0';
+    public string $schemaVersion = '2.0.1';
 
     /**
      * Set to `true` if the plugin should have a settings view in the control panel.
@@ -166,7 +167,8 @@ class PasswordProtection extends Plugin
                         $response->data = $view->renderPageTemplate('password-protection/protect.twig');
                     }
 
-                    $response->send();
+                    // $response->send();
+                    echo $response->data;
                     exit;
                 }
             }
@@ -264,8 +266,26 @@ class PasswordProtection extends Plugin
             }
         }
 
-        $view = Craft::$app->getView();
-        $view->hook('cp.entries.edit.settings', [$this, 'renderEditSourceLink']);
+        $isCraft4 = \version_compare(Craft::$app->getVersion(), '4.0', '>=');
+
+        if ($isCraft4) {
+            Event::on(
+                Element::class,
+                Element::EVENT_DEFINE_META_FIELDS_HTML,
+                function (DefineHtmlEvent $event) {
+                    if ($event->static) {
+                        return;
+                    }
+    
+                    $event->html .= $this->renderEditSourceLink(['entry' => $event->sender]);
+                }
+            );
+
+        }else{
+
+            $view = Craft::$app->getView();
+            $view->hook('cp.entries.edit.settings', [$this, 'renderEditSourceLink']);
+        }
     }
 
     /**
