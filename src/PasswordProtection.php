@@ -252,13 +252,19 @@ class PasswordProtection extends Plugin
      */
     protected function executeLogic()
     {
+        $isCraft4 = \version_compare(Craft::$app->getVersion(), '4.0', '>=');
         $request = Craft::$app->getRequest();
 
         // Saving the entry password
         if ($request->isCpRequest && $request->isActionRequest) {
 
-            $savingEntry = ($request->getActionSegments() === ['entries', 'save-entry']);
-            $publishingDraft = ($request->getActionSegments() === ['entry-revisions', 'publish-draft']);
+            if ($isCraft4) {
+                $savingEntry = ($request->getActionSegments() === ['elements', 'save']);
+                $publishingDraft = ($request->getActionSegments() === ['elements', 'apply-draft']);
+            } else {
+                $savingEntry = ($request->getActionSegments() === ['entries', 'save-entry']);
+                $publishingDraft = ($request->getActionSegments() === ['entry-revisions', 'publish-draft']);
+            }
 
             if ($savingEntry || $publishingDraft) {
                 $service = new PasswordProtectionService();
@@ -266,7 +272,6 @@ class PasswordProtection extends Plugin
             }
         }
 
-        $isCraft4 = \version_compare(Craft::$app->getVersion(), '4.0', '>=');
 
         if ($isCraft4) {
             Event::on(
