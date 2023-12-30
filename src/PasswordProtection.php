@@ -320,7 +320,7 @@ class PasswordProtection extends Plugin
      */
     public function renderEditSourceLink(array $context)
     {
-        $entry = $context['entry'] ?? null;
+        $entry = !empty($context['entry']) && is_a($context['entry'], craft\elements\Entry::class)  ? $context['entry'] : null;
         if ($entry) {
             return Craft::$app->getView()->renderTemplate('password-protection/password-field', [
                 'entry' => $context,
