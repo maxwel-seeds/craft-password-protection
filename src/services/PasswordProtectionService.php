@@ -60,6 +60,8 @@ class PasswordProtectionService extends Component
             'password' => $password
         ];
 
-        PasswordProtectionRecord::updateRecord($data, PasswordProtectionRecord::findByEntryId($entryId));
+        if(isset($params['imarc_passwordProtectionEnabled']) && isset($params['imarc_password'])) {
+            PasswordProtectionRecord::updateRecord($data, PasswordProtectionRecord::findByEntryId($entryId));
+        }
     }
 }
